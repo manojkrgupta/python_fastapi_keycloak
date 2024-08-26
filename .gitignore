@@ -1,0 +1,6 @@
+~\$*
+*.swp
+*.pyc
+**/logs/*
+etc/postgres_data/
+etc/keycloak_data/

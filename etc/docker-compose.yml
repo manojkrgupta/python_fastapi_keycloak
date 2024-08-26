@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:15.6
+    container_name: postgres
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloakdb
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpasswd
+    restart:
+      always
+    networks:
+      - lan1
+
+  keycloak:
+    image: bitnami/keycloak:25.0.3
+    container_name: keycloak
+    volumes:
+      - ./keycloak_data:/opt/bitnami/keycloak/data
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloakdb
+      DB_USER: dbuser
+      DB_SCHEMA: public
+      DB_PASSWORD: dbpasswd
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      PROXY_ADDRESS_FORWARDING: "true"
+      KEYCLOAK_LOGLEVEL: DEBUG
+    ports:
+      - '8095:8080'
+    depends_on:
+      - postgres
+    restart:
+      always
+    networks:
+      - lan1
+
+volumes:
+  postgres_data:
+    driver: local
+  keycloak_data:
+    driver: local
+
+networks:
+  lan1:
+    driver: bridge
+    name: yahoo_network
